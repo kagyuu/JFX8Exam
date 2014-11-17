@@ -9,9 +9,14 @@ import com.mycompany.jfxtemplate.core.FXMLDialog;
 import com.mycompany.jfxtemplate.core.MyDialog;
 import com.mycompany.jfxtemplate.core.SimpleDialogController;
 import com.mycompany.jfxtemplate.tx.BizLogic;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import javax.xml.ws.soap.Addressing;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -19,20 +24,22 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author atsushi
  */
+@Data
+@EqualsAndHashCode(callSuper=false)
 public class SubController extends SimpleDialogController {
     @Autowired
     private BizLogic bizLogic;
     
     @FXML
     private TextField txtNumber;
-    
+        
     /**
      * この画面の View.
      * この画面を new FXMLDialog() で、作ったときに設定される
      */
     @MyDialog
     private FXMLDialog myStage;
-    
+
     /**
      * 計算ボタンが押されたときの処理.
      * @param event Event
@@ -49,5 +56,9 @@ public class SubController extends SimpleDialogController {
             ex.printStackTrace();
         }
         myStage.close();
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
     }
 }

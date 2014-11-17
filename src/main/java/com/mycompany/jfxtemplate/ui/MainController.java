@@ -26,13 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MainController extends SimpleDialogController implements Observer {
     @Autowired
     private AddController addController;
-    
-    private FXMLDialog addDialog;
 
     @Autowired
     private SubController subController;
-    
-    private FXMLDialog subDialog;
     
     @Autowired
     private D3ExamController d3ExamController;
@@ -56,7 +52,7 @@ public class MainController extends SimpleDialogController implements Observer {
      */
     @FXML
     public void handleAddAction(final ActionEvent event) {
-        addDialog.show();
+        addController.getMyStage().show();
     }
 
     /**
@@ -65,7 +61,7 @@ public class MainController extends SimpleDialogController implements Observer {
      */
     @FXML
     public void handleSubAction(final ActionEvent event) {
-        subDialog.show();
+        subController.getMyStage().show();
     }
     
     /**
@@ -74,8 +70,7 @@ public class MainController extends SimpleDialogController implements Observer {
      */
     @FXML
     public void handle3DAction(final ActionEvent event) {
-        FXMLDialog d3Dialog = new FXMLDialog(d3ExamController, myStage, Modality.APPLICATION_MODAL);
-        d3Dialog.show();
+        d3ExamController.getMyStage().show();
     }
     
     /**
@@ -89,9 +84,11 @@ public class MainController extends SimpleDialogController implements Observer {
     @Override
     public void initialize(final URL url, final ResourceBundle bundle) {
         // Add 画面を作る
-        addDialog = new FXMLDialog(addController, myStage, Modality.APPLICATION_MODAL);
+        FXMLDialog addDialog = new FXMLDialog(addController, myStage, Modality.APPLICATION_MODAL);
         // Sub 画面を作る
-        subDialog = new FXMLDialog(subController, myStage, Modality.APPLICATION_MODAL);
+        FXMLDialog subDialog = new FXMLDialog(subController, myStage, Modality.APPLICATION_MODAL);
+        // 3D Dialog 画面を作る
+        FXMLDialog d3Dialog = new FXMLDialog(d3ExamController, myStage);
 
         // Add 画面の変更を監視する
         addController.addObserver(this);
@@ -106,7 +103,6 @@ public class MainController extends SimpleDialogController implements Observer {
      */
     @Override
     public void update(Observable o, Object arg) {
-        System.out.println("UPDATE");
         txtSum.setText(String.format("Value=%d", entity.getVal()));
     }
 }

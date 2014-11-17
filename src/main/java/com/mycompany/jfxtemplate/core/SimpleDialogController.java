@@ -5,12 +5,8 @@
  */
 package com.mycompany.jfxtemplate.core;
 
-import java.net.URL;
 import java.util.Observable;
-import java.util.ResourceBundle;
-
 import javafx.scene.image.Image;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
@@ -20,7 +16,7 @@ import org.springframework.core.env.Environment;
  *
  * @author hondou
  */
-public class SimpleDialogController
+public abstract class SimpleDialogController
     extends Observable implements DialogController {
 
     /**
@@ -35,18 +31,7 @@ public class SimpleDialogController
     @Autowired
     @Qualifier("icon")
     private Image icon;
-
-    /**
-     * 初期化. なにもしません
-     *
-     * @param url URL
-     * @param bundle Bundle
-     *
-     */
-    @Override
-    public void initialize(final URL url, final ResourceBundle bundle) {
-    }
-
+    
     /**
      * FXML ファイル名を返します.
      *

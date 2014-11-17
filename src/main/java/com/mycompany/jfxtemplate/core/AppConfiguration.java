@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
@@ -21,7 +22,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  * @author hondou
  */
 @Configuration
-@Import({UiConfiguration.class, TxConfiguration.class, MdlConfiguration.class })
+@Import({UiConfiguration.class, TxConfiguration.class, MdlConfiguration.class})
 @PropertySource("classpath:app.properties")
 public class AppConfiguration {
 
@@ -45,5 +46,14 @@ public class AppConfiguration {
                 .currentThread()
                 .getContextClassLoader()
                 .getResourceAsStream("icon.png"));
+    }
+
+    /**
+     * @return 作業ディレクトリ
+     */
+    @Bean
+    @Scope("singleton")
+    public WorkDir workdir() {
+        return new WorkDir();
     }
 }

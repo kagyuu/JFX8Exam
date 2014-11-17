@@ -5,6 +5,8 @@
  */
 package com.mycompany.jfxtemplate.d3;
 
+import com.mycompany.jfxtemplate.core.FXMLDialog;
+import com.mycompany.jfxtemplate.core.MyDialog;
 import com.mycompany.jfxtemplate.core.SimpleDialogController;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -23,11 +25,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Sphere;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 3Dの練習.
  * @author hondou
  */
+@Data
+@EqualsAndHashCode(callSuper=false)
 public class D3ExamController extends SimpleDialogController {
     @FXML
     private VBox vbox;
@@ -37,6 +43,9 @@ public class D3ExamController extends SimpleDialogController {
 
     @FXML
     private Label lblY;
+    
+    @MyDialog
+    private FXMLDialog myStage;
 
     private PerspectiveCamera camera;
 

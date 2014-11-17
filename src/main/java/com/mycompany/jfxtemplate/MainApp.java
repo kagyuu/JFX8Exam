@@ -16,19 +16,25 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 /**
  * アプリケーション起動クラス.
+ *
  * @author hondou
  */
 public final class MainApp extends Application {
 
     /**
      * JavaFXに制御が移った後の初期化処理.
+     *
      * @param stage Stage
      */
     @Override
     public void start(final Stage stage) {
         // Java FX 8 のスレッド上で Spring Container を立ち上げる
         final ApplicationContext context
-            = new AnnotationConfigApplicationContext(AppConfiguration.class);
+                = new AnnotationConfigApplicationContext(AppConfiguration.class);
+
+        // 作業ディレクトリを初期化
+        final AppConfiguration app = context.getBean(AppConfiguration.class);
+        app.workdir().init();
 
         // Spring から UIConfiguration を取得する
         final UiConfiguration uiConfig = context.getBean(UiConfiguration.class);
@@ -55,5 +61,4 @@ public final class MainApp extends Application {
     public static void main(final String[] args) {
         launch(args);
     }
-
 }

@@ -9,9 +9,13 @@ import com.mycompany.jfxtemplate.core.FXMLDialog;
 import com.mycompany.jfxtemplate.core.MyDialog;
 import com.mycompany.jfxtemplate.core.SimpleDialogController;
 import com.mycompany.jfxtemplate.tx.BizLogic;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -19,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author atsushi
  */
+@Data
+@EqualsAndHashCode(callSuper=false)
 public class AddController extends SimpleDialogController {
     
     @Autowired
@@ -50,5 +56,9 @@ public class AddController extends SimpleDialogController {
             ex.printStackTrace();
         }        
         myStage.close();
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
     }
 }
