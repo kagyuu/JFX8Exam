@@ -73,11 +73,20 @@ public class UiConfiguration {
     }
     
     /**
-     * @return Sub Controller.
+     * @return 3D Exam Controller.
      */
     @Bean
     @Scope("prototype")
     public D3ExamController d3ExamController() {
         return new D3ExamController();
+    }
+    
+    /**
+     * @return WebView Exam Controller.
+     */
+    @Bean
+    @Scope("prototype")
+    public WebExamController webExamController() {
+        return new WebExamController();
     }
 }

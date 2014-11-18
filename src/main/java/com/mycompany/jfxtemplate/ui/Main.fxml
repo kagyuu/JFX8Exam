@@ -15,6 +15,7 @@
         <Hyperlink onAction="#handleAddAction" text="足し算業務" />
         <Hyperlink onAction="#handleSubAction" text="引き算業務" />
             <Hyperlink onAction="#handle3DAction" text="3Dの練習" />
+            <Hyperlink onAction="#handleWebViewAction" text="WebViewの練習" />
       </children>
     </VBox>
   </children>
