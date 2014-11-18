@@ -1,7 +1,4 @@
 /* All Rights Reserved, Copyright (C) com.mycompany
- * この製品は、日本国著作権法及び国際条約により保護されています。
- * この製品の全部または一部を無断で複製した場合、著作権法の侵害となりますので、
- * ご注意ください。
  */
 package com.mycompany.jfxtemplate.ui;
 
@@ -16,34 +13,11 @@ import org.springframework.context.annotation.Scope;
 /**
  * Springの画面コントローラオブジェクト設定クラス.
  *
- * @author hondou
+ * @author atsushi
  */
 @Configuration
 @Lazy
 public class UiConfiguration {
-
-    /**
-     * Primary Stage.
-     */
-    private Stage primaryStage;
-
-    /**
-     * set primary stage.
-     *
-     * @param primaryStage primary stage.
-     */
-    public void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-    }
-
-    /**
-     * @return Main Dialog.
-     */
-    @Bean
-    @Scope("prototype")
-    public FXMLDialog mainDialog() {
-        return new FXMLDialog(mainController(), primaryStage);
-    }
 
     /**
      * @return Main Controller.

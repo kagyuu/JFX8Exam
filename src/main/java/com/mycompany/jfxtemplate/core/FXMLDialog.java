@@ -1,7 +1,4 @@
 /* All Rights Reserved, Copyright (C) com.mycompany
- * この製品は、日本国著作権法及び国際条約により保護されています。
- * この製品の全部または一部を無断で複製した場合、著作権法の侵害となりますので、
- * ご注意ください。
  */
 package com.mycompany.jfxtemplate.core;
 
@@ -21,9 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Spring 管理下の画面コントローラと FXMLから作られる GUI を結びつけるための
- * Java FX の Stage の拡張.
- * @author hondou
+ * Extended Java FX Stage.
+ * The Java FX bind fxml to new dialog-controller object ordinally. 
+ * But we want to transfer the management of dialog-controller to Spring Contaier.
+ * Stephen Chin presented how to bind dialog-controller object managed by 
+ * Spring Container to fxml at JavaFX in Spring Day 2, 2012.
+ * http://steveonjava.com/javafx-in-spring-day-2/
+ * This was made by reference in it.
+ * @author atsushi
  */
 public class FXMLDialog extends Stage {
     /**
@@ -33,21 +35,22 @@ public class FXMLDialog extends Stage {
         = LoggerFactory.getLogger(FXMLDialog.class);
 
     /**
-     * コンストラクタ. Window枠表示、モーダル指定です
+     * Constructor.
+     * Modal Window
      *
-     * @param controller コントローラ
-     * @param owner 親画面
+     * @param controller Controller
+     * @param owner Parent Dialog
      */
     public FXMLDialog(final DialogController controller, final Window owner) {
         this(controller, owner, StageStyle.DECORATED, Modality.WINDOW_MODAL);
     }
 
     /**
-     * コンストラクタ. Window枠表示です
+     * Constructor.
      *
-     * @param controller コントローラ
-     * @param owner 親画面
-     * @param modal モーダル
+     * @param controller Controller
+     * @param owner Parent Dialog
+     * @param modal Modality
      */
     public FXMLDialog(final DialogController controller, final Window owner,
             final Modality modal) {
@@ -55,11 +58,12 @@ public class FXMLDialog extends Stage {
     }
 
     /**
-     * コンストラクタ. モーダル指定です
+     * Constructor.
+     * Modal Window
      *
-     * @param controller コントローラ
-     * @param owner 親画面
-     * @param style Window枠
+     * @param controller Controller
+     * @param owner Parent Dialog
+     * @param style Window Style
      */
     public FXMLDialog(final DialogController controller, final Window owner,
             final StageStyle style) {
@@ -67,18 +71,18 @@ public class FXMLDialog extends Stage {
     }
 
     /**
-     * コンストラクタ.
+     * Constructor.
      *
-     * @param controller コントローラ
-     * @param owner 親画面
-     * @param style Window枠
-     * @param modal モーダル
+     * @param controller Controller
+     * @param owner Parent Dialog
+     * @param style Window Style
+     * @param modal Modality
      */
     public FXMLDialog(final DialogController controller, final Window owner,
             final StageStyle style, final Modality modal) {
         super(style);
 
-        LOGGER.trace("画面を作成します。fxml={}", controller.fxml());
+        LOGGER.trace("Create FXMLDialog. fxml={}", controller.fxml());
 
         initOwner(owner);
         initModality(modal);
@@ -97,7 +101,7 @@ public class FXMLDialog extends Stage {
 
             wireThis(controller);
         } catch (IOException e) {
-            LOGGER.error("画面作成に失敗しました", e);
+            LOGGER.error("Faild to create FXMLDialog", e);
             throw new RuntimeException(e);
         }
     }

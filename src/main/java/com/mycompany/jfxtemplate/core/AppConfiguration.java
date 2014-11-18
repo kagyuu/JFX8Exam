@@ -1,7 +1,4 @@
 /* All Rights Reserved, Copyright (C) com.mycompany
- * この製品は、日本国著作権法及び国際条約により保護されています。
- * この製品の全部または一部を無断で複製した場合、著作権法の侵害となりますので、
- * ご注意ください。
  */
 package com.mycompany.jfxtemplate.core;
 
@@ -17,9 +14,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
- * Springのルート設定クラス.
+ * Root config for Spring.
  *
- * @author hondou
+ * @author atsushi
  */
 @Configuration
 @Import({UiConfiguration.class, TxConfiguration.class, MdlConfiguration.class})
@@ -27,8 +24,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 public class AppConfiguration {
 
     /**
-     * app.properties の内容を読み取ります.
-     *
      * @return app.properties
      */
     @Bean
@@ -38,7 +33,7 @@ public class AppConfiguration {
     }
 
     /**
-     * @return アイコンイメージ
+     * @return Icon image
      */
     @Bean(name = "icon")
     public Image icon() {
@@ -49,7 +44,7 @@ public class AppConfiguration {
     }
 
     /**
-     * @return 作業ディレクトリ
+     * @return workdir
      */
     @Bean
     @Scope("singleton")

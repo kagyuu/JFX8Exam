@@ -1,7 +1,4 @@
 /* All Rights Reserved, Copyright (C) com.mycompany
- * この製品は、日本国著作権法及び国際条約により保護されています。
- * この製品の全部または一部を無断で複製した場合、著作権法の侵害となりますので、
- * ご注意ください。
  */
 package com.mycompany.jfxtemplate;
 
@@ -15,38 +12,31 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
- * アプリケーション起動クラス.
- *
- * @author hondou
+ * boot class.
+ * @author atsushi
  */
 public final class MainApp extends Application {
 
     /**
-     * JavaFXに制御が移った後の初期化処理.
-     *
+     * Initialize process.
+     * This procedure run on the JavaFX application thread.
      * @param stage Stage
      */
     @Override
     public void start(final Stage stage) {
-        // Java FX 8 のスレッド上で Spring Container を立ち上げる
+        // wake up Spring Container on the JavaFX application thread.
         final ApplicationContext context
                 = new AnnotationConfigApplicationContext(AppConfiguration.class);
 
-        // 作業ディレクトリを初期化
+        // initialize the workdir.
         final AppConfiguration app = context.getBean(AppConfiguration.class);
         app.workdir().init();
 
-        // Spring から UIConfiguration を取得する
+        // get UIConfiguration from the Spring container.
         final UiConfiguration uiConfig = context.getBean(UiConfiguration.class);
-        uiConfig.setPrimaryStage(stage);
 
-        // UIConfiguration から、初期画面を取得。
-        // 初期画面が Spring によってインスタンス化されるので、初期画面以降のオブ
-        // ジェクトは、すべて Spring によって DI される。
-        // ( 初期画面で子画面が @Autowired されていたら、Spring によって、適切な
-        // オブジェクトが DI されている。また、子画面内の @Autowired も DI されて
-        // いる。孫画面の ... )
-        final FXMLDialog mainStage = uiConfig.mainDialog();
+        // get Main Menu from the Spring container
+        final FXMLDialog mainStage = new FXMLDialog(uiConfig.mainController(), stage);
         mainStage.show();
     }
 

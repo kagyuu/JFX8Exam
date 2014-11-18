@@ -1,4 +1,4 @@
 /**
- * このアプリケーションの起動クラス.
+ * root package.
  */
 package com.mycompany.jfxtemplate;

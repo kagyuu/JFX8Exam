@@ -1,7 +1,4 @@
 /* All Rights Reserved, Copyright (C) com.mycompany
- * この製品は、日本国著作権法及び国際条約により保護されています。
- * この製品の全部または一部を無断で複製した場合、著作権法の侵害となりますので、
- * ご注意ください。
  */
 package com.mycompany.jfxtemplate.ui;
 
@@ -12,7 +9,6 @@ import com.mycompany.jfxtemplate.core.MyDialog;
 import com.mycompany.jfxtemplate.core.SimpleDialogController;
 import com.mycompany.jfxtemplate.core.WebViewController;
 import com.mycompany.jfxtemplate.core.WorkDir;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -36,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * WebViewを使ったサンプル.
  *
- * @author hondou
+ * @author atsushi
  */
 public class WebExamController extends SimpleDialogController {
 
