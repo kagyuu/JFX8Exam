@@ -5,7 +5,7 @@ package com.mycompany.jfxtemplate.mdl;
 import lombok.Data;
 
 /**
- * Entity
+ * Entity.
  * @author atsushi
  */
 @Data

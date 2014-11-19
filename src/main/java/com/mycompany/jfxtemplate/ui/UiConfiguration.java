@@ -2,16 +2,14 @@
  */
 package com.mycompany.jfxtemplate.ui;
 
-import com.mycompany.jfxtemplate.core.FXMLDialog;
 import com.mycompany.jfxtemplate.d3.D3ExamController;
-import javafx.stage.Stage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
 /**
- * Springの画面コントローラオブジェクト設定クラス.
+ * UI config for Spring.
  *
  * @author atsushi
  */

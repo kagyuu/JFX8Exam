@@ -27,7 +27,7 @@
             </packagings>
             <goals>
                 <goal>clean</goal>
-                <goal>install</goal>
+                <goal>package</goal>
                 <goal>jfx:jar</goal>
             </goals>
         </action>        

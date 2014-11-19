@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mycompany.jfxtemplate.core.FXMLDialog;
 import com.mycompany.jfxtemplate.core.Jackson;
 import com.mycompany.jfxtemplate.core.MyDialog;
-import com.mycompany.jfxtemplate.core.SimpleDialogController;
+import com.mycompany.jfxtemplate.core.AbstractDialogController;
 import com.mycompany.jfxtemplate.core.WebViewController;
 import com.mycompany.jfxtemplate.core.WorkDir;
 import java.io.IOException;
@@ -30,11 +30,11 @@ import javafx.scene.web.WebView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * WebViewを使ったサンプル.
- *
+ * Web Exam Controller.
+ * This is an example for webview.
  * @author atsushi
  */
-public class WebExamController extends SimpleDialogController {
+public class WebExamController extends AbstractDialogController {
 
     /**
      * WebView.
@@ -55,26 +55,28 @@ public class WebExamController extends SimpleDialogController {
     private Slider slider;
 
     /**
-     * この画面の View. この画面を new FXMLDialog() で、作ったときに設定される
+     * Window.
      */
     @MyDialog
     private FXMLDialog myStage;
 
     /**
-     * 作業ディレクトリ.
+     * Workdir.
      */
     @Autowired
     private WorkDir work;
 
     /**
-     * WebViewのコントローラクラス. Javascript からよばれたときに、JavaFX8 は reflection で、
-     * メソッドを探す。無名クラスにすると、JavaFX8 がうまく呼び出し先 メソッドを見つけられないようなので inner class にする。
+     * WebView Controller.
+     * You must create inner class to handler webview.
+     * Java FX can't invoke a method in the anonumous class.
+     * anonumous class is like this :
+     * WebController myController = new WebController() { ... };
      */
     public final class MyWebController extends WebViewController {
 
         /**
-         * WebView で alert() が呼ばれたときの処理.
-         *
+         * handler javasctipt:alert.
          * @param event Event
          */
         @Override
@@ -88,7 +90,7 @@ public class WebExamController extends SimpleDialogController {
         }
 
         /**
-         * WebView で、エラーが起きた時の処理.
+         * handler javascript error.
          * @param th Throwable
          */
         @Override
@@ -127,32 +129,37 @@ public class WebExamController extends SimpleDialogController {
         }
 
         /**
-         * HTMLが正常に良こまれた後に呼ばれる処理.
+         * handler javascript ready.
+         * enable button and slider that will call javasctipt:function().
          */
         @Override
         public void onWebViewReady() {
-            // WebViewの初期化完了で、ボタンとスライダーを有効化する
             button.setDisable(false);
             slider.setDisable(false);
         }
 
         /**
-         * JavaScript側から呼ばれるメソッド.
+         * An examle of calling from javascript with simple args.
          *
-         * @param val スライダーの値
+         * @param val slider value
          */
         public void slideTo(final double val) {
             slider.setValue(val);
         }
-        
+
         /**
-         * JavaScript側から呼ばれるメソッド.
-         * JSON文字列をBeanに変換する
-         * @param jsonString 
-         */
+          * An examle of calling from javascript with complex args.
+          * Complex args shoud be JSON String. Javascript has own variable types
+          * and Java has so. It's difficult to manage complex args as hierarchic
+          * object.
+          * @param jsonString args
+          * @throws IOException failt to parse jsonString
+          */
         public void getJson(final String jsonString) throws IOException {
-            MountainBean bean = Jackson.objectMapper.readValue(jsonString, MountainBean.class);
-            
+            // Parse json string to bean
+            final MountainBean bean
+              = Jackson.objectMapper.readValue(jsonString, MountainBean.class);
+
             final Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText(null);
@@ -163,16 +170,21 @@ public class WebExamController extends SimpleDialogController {
     }
 
     /**
-     * WebViewのコントローラクラス.
+     * WebView Controller.
      */
     private MyWebController myWebController;
 
+    /**
+     * initialize this controller.
+     * @param url URL
+     * @param bundle Bundle
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         myWebController = new MyWebController();
-        // Java FX の WebView コンポーネントを割り付け
+        // bind webview to webview-controller
         myWebController.bind(webview);
-        // HTML のロード
+        // load HTML
         final Object[][] params = new Object[][]{
             {"root", work.getURL() + "html"}
         };
@@ -180,19 +192,27 @@ public class WebExamController extends SimpleDialogController {
     }
 
     /**
-     * 送信ボタンが押されたときの処理.
-     * Bean を JSON文字列化して Javascript を呼び出す。
+     * will be called when "Send" buttond was clickded.
+     * Send Bean as JSON String
      * @param event Event
+     * @throws JsonProcessingException failed to serialize bean
      */
     @FXML
-    public void handleSendButtonAction(final ActionEvent event) throws JsonProcessingException {
-        MountainBean fujisan = new MountainBean("富士山", 3776);
-        myWebController.callJs("getJson", Jackson.objectMapper.writeValueAsString(fujisan));
+    public void handleSendButtonAction(final ActionEvent event)
+            throws JsonProcessingException {
+
+        // 富士山 is Mt.Fuji in English. Send multi-byte character.
+        final MountainBean fujisan = new MountainBean("富士山", 3776);
+        // Call javascript:function getJson(json)
+        myWebController.callJs(
+            "getJson",
+            Jackson.objectMapper.writeValueAsString(fujisan));
     }
 
     /**
-     * スライダーが動いたときの処理.
-     *
+     * will be called when "Slider" was moved.
+     * Did you know event type? You can try set arg type Event and display
+     * type by System.out.println(event.getClass().getCanonicalName());.
      * @param event Event
      */
     @FXML

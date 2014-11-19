@@ -14,43 +14,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Velocity で、文書を作成するためのユーティリティ部品.
+ * Utility methods for Apache Velocity.
  *
  * @author atsushi
  *
  */
-public class MyVelocityUtil {
+public final class MyVelocityUtil {
 
     static {
-        Properties p = new Properties();
+        final Logger logger = LoggerFactory.getLogger(MyVelocityUtil.class);
+        final Properties prop = new Properties();
         try {
-            p.load(MyVelocityUtil.class.getClassLoader().getResourceAsStream("velocity.properties"));
+            final ClassLoader loader
+                    = Thread.currentThread().getContextClassLoader();
+            prop.load(loader.getResourceAsStream("velocity.properties"));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Faild to load velocity.properties.", e);
         }
-        Velocity.init(p);
+        Velocity.init(prop);
     }
 
     /**
-     * コンストラクタ.
+     * Disable default constructor.
      */
     private MyVelocityUtil() {
         super();
     }
 
     /**
-     * template に対して keyVals で穴埋めした結果を返します.
+     * merge template and key-value.
      *
-     * @param template テンプレートファイル名 (Classpath 相対)
-     * @param keyVals テンプレートに埋め込むオブジェクト
-     * @return マージ結果
+     * @param template name of template file (classpath relative path)
+     * @param keyVals variables
+     * @return merged text
      */
-    public static String merge(final String template, final Map<Object, Object> keyVals) {
-        Logger logger = LoggerFactory.getLogger("HTML");
-        VelocityContext ctx = new VelocityContext();
-        for (Map.Entry<Object, Object> entry : keyVals.entrySet()) {
+    public static String merge(
+            final String template, final Map<Object, Object> keyVals) {
+        final Logger logger = LoggerFactory.getLogger("HTML");
+        final VelocityContext ctx = new VelocityContext();
+        keyVals.entrySet().stream().forEach((entry) -> {
             ctx.put(entry.getKey().toString(), entry.getValue());
-        }
+        });
 
         Template t = Velocity.getTemplate(template);
         StringWriter sw = new StringWriter();

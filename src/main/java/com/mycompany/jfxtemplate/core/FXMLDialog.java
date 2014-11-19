@@ -13,15 +13,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Extended Java FX Stage.
- * The Java FX bind fxml to new dialog-controller object ordinally. 
+ * The Java FX bind fxml to new dialog-controller object ordinally.
  * But we want to transfer the management of dialog-controller to Spring Contaier.
- * Stephen Chin presented how to bind dialog-controller object managed by 
+ * Stephen Chin presented how to bind dialog-controller object managed by
  * Spring Container to fxml at JavaFX in Spring Day 2, 2012.
  * http://steveonjava.com/javafx-in-spring-day-2/
  * This was made by reference in it.
@@ -89,12 +88,7 @@ public class FXMLDialog extends Stage {
         final URL fxml = controller.getClass().getResource(controller.fxml());
         final FXMLLoader loader = new FXMLLoader(fxml);
         try {
-            loader.setControllerFactory(new Callback<Class<?>, Object>() {
-                @Override
-                public Object call(final Class<?> aClass) {
-                    return controller;
-                }
-            });
+            loader.setControllerFactory((final Class<?> aClass) -> controller);
             setScene(new Scene((Parent) loader.load()));
             setTitle(controller.title());
             getIcons().add(controller.getIcon());
@@ -107,9 +101,10 @@ public class FXMLDialog extends Stage {
     }
 
     /**
-     * Controller の @MyDialg アノテーションがついたフィールド変数に、この FXMLDialg のインスタンスを設定します.
-     *
-     * @param controller コントローラ
+     * Inject this FXMLDialog.
+     * Inject this FXMLDialog to the field variable annotated by &amp;Mydialog
+     * in the argument controller.
+     * @param controller Controller
      */
     private void wireThis(final DialogController controller) {
 
@@ -120,7 +115,7 @@ public class FXMLDialog extends Stage {
                     try {
                         f.set(controller, this);
                     } catch (IllegalArgumentException | IllegalAccessException ex) {
-                        LOGGER.error("画面コントローラへの @MyDialog のInjectionに失敗しました", ex);
+                        LOGGER.error("Can't inject FXMLDalig to @MyDialog", ex);
                         throw new RuntimeException(ex);
                     }
                 }

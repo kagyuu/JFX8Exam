@@ -3,22 +3,22 @@
 package com.mycompany.jfxtemplate.core;
 
 /**
- * WebViewの状態を指し示すフラグ.
+ * State of WebView.
  *
  * @author atsushi
  */
 public enum WebState {
 
     /**
-     * ロード中.
+     * loading.
      */
     LOADING,
     /**
-     * 読み込み終了(Javascript呼び出し可能).
+     * success (I can use javascript functions from javafx).
      */
     ACCESSIBLE,
     /**
-     * 読み込み失敗.
+     * failed.
      */
     EXIT_FAIL
 }

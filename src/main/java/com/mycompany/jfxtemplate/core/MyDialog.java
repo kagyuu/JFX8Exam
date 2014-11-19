@@ -6,8 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * 画面コントローラクラスのプロパティ変数で、自画面インスタンスのDIを指示する
- * アノテーション.
+ * Field annotations for the Dialog Controller to inject the FXMLDialog.
  * @author atsushi
  */
 @Retention(RetentionPolicy.RUNTIME)

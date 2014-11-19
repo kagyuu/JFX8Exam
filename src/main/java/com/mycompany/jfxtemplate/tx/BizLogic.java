@@ -10,18 +10,26 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author atsushi
  */
 public class BizLogic {
-    
+
     /**
      * Entity.
      */
     @Autowired
     private Entity entity;
-    
-    public void add(int num) {
+
+    /**
+     * add.
+     * @param num number
+     */
+    public void add(final int num) {
         entity.setVal(entity.getVal() + num);
     }
-    
-    public void sub(int num) {
+
+    /**
+     * sub.
+     * @param num number
+     */
+    public void sub(final int num) {
         entity.setVal(entity.getVal() - num);
     }  
 }

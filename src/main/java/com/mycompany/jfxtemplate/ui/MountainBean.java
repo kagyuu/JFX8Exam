@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * WebViewとのデータのやり取りに使うBean.
+ * Mountain Bean.
+ * for examination of calling javascript from java and calling java
+ * from javascript.
  * @author atsushi
  */
 @Data

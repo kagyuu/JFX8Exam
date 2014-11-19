@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
 /**
- * Springの業務ロジックオブジェクト設定クラス.
+ * Business Logic config for Spring.
  * @author atsushi
  */
 @Configuration

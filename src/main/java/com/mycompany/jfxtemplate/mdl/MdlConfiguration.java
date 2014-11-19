@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
 /**
- * SpringのModelオブジェクト設定クラス.
+ * Model config for Spring.
  * @author atsushi
  */
 @Configuration
@@ -21,5 +21,5 @@ public class MdlConfiguration {
     @Scope("singleton")
     public Entity entity() {
         return new Entity();
-    }    
+    }
 }

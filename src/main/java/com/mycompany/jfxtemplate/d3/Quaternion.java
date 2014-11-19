@@ -25,8 +25,8 @@ public class Quaternion {
         this(
             Math.cos(r.t / 2.0), 
             r.a * Math.sin(r.t / 2.0), 
-            r.b * Math.sin(r.t / 2.0), 
-            r.c * Math.sin(r.t / 2.0)
+            r.b * Math.sin(r.t / 2.0), // may be JIT compiler do well.
+            r.c * Math.sin(r.t / 2.0)  // may be JIT compiler do well.
         );
     }
     
@@ -39,4 +39,3 @@ public class Quaternion {
         );
     }
 }
- 

@@ -4,7 +4,7 @@ package com.mycompany.jfxtemplate.d3;
 
 import com.mycompany.jfxtemplate.core.FXMLDialog;
 import com.mycompany.jfxtemplate.core.MyDialog;
-import com.mycompany.jfxtemplate.core.SimpleDialogController;
+import com.mycompany.jfxtemplate.core.AbstractDialogController;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -26,12 +26,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 3Dの練習.
+ * 3D Examination.
  * @author atsushi
  */
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class D3ExamController extends SimpleDialogController {
+public class D3ExamController extends AbstractDialogController {
     @FXML
     private VBox vbox;
 
@@ -40,7 +40,7 @@ public class D3ExamController extends SimpleDialogController {
 
     @FXML
     private Label lblY;
-    
+
     @MyDialog
     private FXMLDialog myStage;
 
@@ -95,7 +95,7 @@ public class D3ExamController extends SimpleDialogController {
             sphere.setTranslateZ(20.0 * Math.cos(th) - 20.0);
             sphere.setMaterial(greenMaterial);
             sphere.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-                System.out.println("緑 Clickされたよ:" + e.toString());
+                System.out.println("Green was clicked:" + e.toString());
             });
 
             double th2 = th + Math.PI;
@@ -105,16 +105,16 @@ public class D3ExamController extends SimpleDialogController {
             sphere2.setTranslateZ(20.0 * Math.cos(th2) - 20.0);
             sphere2.setMaterial(redMaterial);
             sphere2.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-                System.out.println("赤 Clickされたよ" + e.toString());
+                System.out.println("Red was clicked" + e.toString());
             });
 
             root.getChildren().addAll(sphere, sphere2);
         }
 
-        // 透視投影カメラを設定する
+        // Create Camera
         camera = new PerspectiveCamera(true);
 
-        // カメラの位置を (0, 0, -r) にする
+        // Set camera location (0, 0, -r)
         camera.setTranslateZ(-r);
         camera.setTranslateY(0.0);
         camera.setTranslateX(0.0);
@@ -141,7 +141,7 @@ public class D3ExamController extends SimpleDialogController {
             if (!Double.isNaN(mx) && !Double.isNaN(my)) {
                 az += Math.PI * (cx - mx) / 640.0;
                 el += Math.PI * (cy - my) / 480.0;
-                
+
                 while (az < 0){
                     az += 2 * Math.PI;
                 }
@@ -177,14 +177,18 @@ public class D3ExamController extends SimpleDialogController {
         camera.setTranslateY(y);
         camera.setTranslateZ(z);
 
-        // カメラのローテート
-        // Y軸中心に -az ラジアン回転
+        // Rotate camera to view (0,0,0)
+        // Rotate -az rad around Y-Axis
         Rotation rAz = new Rotation(-az, 0, 1, 0);
         Quaternion qAz = new Quaternion(rAz);
-        // Y軸(0,1,0) と カメラ位置(0,0,0)->(x,y,z) との法線ベクトルを中心に、-el ラジアン回転
+        // Rotate -el rad aound the normal vector ("法線" in Japanese)
+        // of Y-Axis(0,1,0) and Camera location (0,0,0)->(x,y,z).
+        // Stated another way, that rotation axis is locate on the XZ plain
+        // face and cross Camera location (0,0,0)->(x,y,z) orthogonally
+        // (直交 in Japanese).
         Rotation rEl = new Rotation(z > 0 ? el : -el, z, 0, x);
         Quaternion qEl = new Quaternion(rEl);
-        // 回転を合成
+        // combine rotation with using Quaternion multiple.
         Quaternion qM = qAz.multilple(qEl);
         Rotation rM = new Rotation(qM);
 

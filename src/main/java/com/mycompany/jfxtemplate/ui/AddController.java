@@ -4,7 +4,7 @@ package com.mycompany.jfxtemplate.ui;
 
 import com.mycompany.jfxtemplate.core.FXMLDialog;
 import com.mycompany.jfxtemplate.core.MyDialog;
-import com.mycompany.jfxtemplate.core.SimpleDialogController;
+import com.mycompany.jfxtemplate.core.AbstractDialogController;
 import com.mycompany.jfxtemplate.tx.BizLogic;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class AddController extends SimpleDialogController {
+public class AddController extends AbstractDialogController {
     
     @Autowired
     private BizLogic bizLogic;
@@ -31,25 +31,25 @@ public class AddController extends SimpleDialogController {
     private TextField txtNumber;
     
     /**
-     * この画面の View.
-     * この画面を new FXMLDialog() で、作ったときに設定される
+     * Window.
+     * this will bind when new FXMLDialog()
      */
     @MyDialog
     private FXMLDialog myStage;
 
     /**
-     * 計算ボタンが押されたときの処理.
+     * will be called when "Calc" button is clicked.
      * @param event Event
      */
     @FXML
     public void handleCalcButtonAction(final ActionEvent event) {
         try {
-            // 業務処理
+            // Call business logic
             bizLogic.add(Integer.parseInt(txtNumber.getText()));
-            // このオブジェクトに変更フラグを設定し、監視しているオブジェクトに変更通知
+            // notify I was changed to parent controller (MainController)
             this.setChanged();
             this.notifyObservers();
-        } catch(NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
         }        
         myStage.close();
@@ -57,5 +57,6 @@ public class AddController extends SimpleDialogController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // do nothing
     }
 }

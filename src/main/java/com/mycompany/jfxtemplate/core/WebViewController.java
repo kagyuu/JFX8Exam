@@ -8,6 +8,12 @@ import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
+import javafx.event.Event;
+import javafx.scene.input.MouseButton;
+
+import javafx.scene.input.MouseEvent;
+import javafx.event.EventDispatchChain;
+import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebEvent;
@@ -19,20 +25,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * WebViewの操作にたいするフレームワーク.
+ * WebView Controller.
  *
  * <pre>
- * HTML 側には、
+ * (1) To use this controller, Write following javascripts :
  * ------------------------------------------------
  * var jBridge = null;
  * function isJBridgeReady() {
  *   return !(jBridge == null);
  * }
  * ------------------------------------------------
- * を記述してください。jBridge には、このオブジェクトが関連付けられ
- * Javascript 側から、このオブジェクトの public メソッドを実行する
- * ことができます。
- * たとえば、javascript 側から
+ *
+ * (2) The jBridge will bind this object. So, you can invoke this object from
+ * javascript like followings :
  * ------------------------------------------------
  * function callJavaFX(msg) {
  *   if(isJBridgeReady()) {
@@ -42,7 +47,22 @@ import org.slf4j.LoggerFactory;
  *   }
  * }
  * ------------------------------------------------
- * を呼び出すと、Java 側の WebController#callback(String) が呼び出されます。
+ * thisJavaObj#callback(String) will be invoked.
+ *
+ * (3) There are some javascript event handlers on this object.
+ *
+ *   void handleAlert(WebEvent&lt;String&gt event);
+ *     will be called when alert() was called in the javascript.
+ *
+ *   void handleLoadError(Throwable th);
+ *     will be called when some error was occured int the Nashorn javascript
+ *     engine.
+ *
+ *   void onWebViewReady();
+ *     will be called when the html was ready. Exactry say, we regard that
+ *     isJBridgeReady() javascript function returned true as html ready.
+ * * (4) right click make disable at bind().
+ * if you want to use right-click on webview, please comment out #4 statements.
  * </pre>
  *
  * @author atsushi
@@ -50,7 +70,7 @@ import org.slf4j.LoggerFactory;
 public abstract class WebViewController {
 
     /**
-     * ページのロードが終わって、処理を実行できるかのフラグ.
+     * Page state.
      */
     private WebState state = WebState.LOADING;
 
@@ -60,26 +80,24 @@ public abstract class WebViewController {
     private WebView pWview;
 
     /**
-     * Java-Javascript 接続の再試行回数.
+     * retry limit of calling isJBridgeReady().
      */
     private static final int RETRY_LIMIT = 1000;
 
     /**
-     * WebEngineの初期化終了を待つときに、どれくらいの間隔で終了確認を行うか.
+     * retry interval for calling isJBridgeReady().
      */
     private static final long LOOP_WAIT = 500L;
 
     /**
-     * ページのロードが終わって、処理を実行できるかを検証します.
-     *
-     * @return true:アクセス可<br/>false:アクセス不可
+     * @return state of html
      */
     public WebState getState() {
         return state;
     }
 
     /**
-     * WebView と WebController の関連付けを行います.
+     * bind WebView to WebController.
      *
      * @param wview WebView
      */
@@ -93,7 +111,7 @@ public abstract class WebViewController {
 
         final WebEngine webEngine = wview.getEngine();
 
-        // ----- 1.javascript:alert() が呼ばれたときのイベントハンドラを設定
+        // ----- 1. bind event-handler for javascript:alert()
         webEngine.setOnAlert(new EventHandler<WebEvent<String>>() {
             @Override
             public void handle(final WebEvent<String> event) {
@@ -101,67 +119,70 @@ public abstract class WebViewController {
             }
         });
 
-        // ----- 2.ページのロード状態を監視するイベントハンドラを設定
+        // ----- 2.bind event-handler for page load
         Worker<Void> loadWorker = webEngine.getLoadWorker();
         loadWorker.stateProperty().addListener(
-                new ChangeListener<Worker.State>() {
-                    @Override
-                    public void changed(
-                            final ObservableValue<? extends Worker.State> ov,
-                            final Worker.State oldValue,
-                            final Worker.State newValue) {
-                                state = WebState.LOADING;
-                                logger.trace("State changed, old: {}, new: {}",
-                                        oldValue, newValue);
-                                if (newValue == Worker.State.SUCCEEDED) {
-                                    setCallBack(webEngine, thisController, 0);
-                                } else if (newValue == Worker.State.FAILED) {
-                                    logger.error("Web View の初期化に失敗しました");
-                                    state = WebState.EXIT_FAIL;
-                                    handleLoadError(new Exception("HTMLのロードに失敗しました"));
-                                }
-                            }
-                });
+            new ChangeListener<Worker.State>() {
+                @Override
+                public void changed(
+                    final ObservableValue<? extends Worker.State> ov,
+                    final Worker.State oldValue,
+                    final Worker.State newValue) {
 
-        // ----- 3.ページのエラー状態を監視するイベントハンドラを設定
+                    state = WebState.LOADING;
+                    logger.trace("State changed, old: {}, new: {}",
+                            oldValue, newValue);
+                    if (newValue == Worker.State.SUCCEEDED) {
+                        setCallBack(webEngine, thisController, 0);
+                    } else if (newValue == Worker.State.FAILED) {
+                        logger.error("failed to initialize webview");
+                        state = WebState.EXIT_FAIL;
+                        handleLoadError(new Exception("failed to initialize webview"));
+                    }
+                }
+            }
+        );
+
+        // ----- 3.bind event-hander for page error
         loadWorker.exceptionProperty().addListener(
-                new ChangeListener<Throwable>() {
-                    @Override
-                    public void changed(
-                            final ObservableValue<? extends Throwable> ov,
-                            final Throwable oldValue, final Throwable newValue) {
-                                logger.error("Web View がエラーを返しました", newValue);
-                            }
-                });
+            new ChangeListener<Throwable>() {
+                @Override
+                public void changed(
+                    final ObservableValue<? extends Throwable> ov,
+                    final Throwable oldValue, final Throwable newValue) {
+                        logger.error("Web View returns error", newValue);
+                }
+            }
+        );
 
-// このアプリでは WebView 上で右クリックを使う。ブラウザの右クリックメニューの抑止は javasctipt で行う
-        // ----- 4.右クリックを握りつぶす
-//		wview.setEventDispatcher(new EventDispatcher() {
-//			private EventDispatcher originalDispatcher = wview.getEventDispatcher();
-//
-//			@Override
-//			public Event dispatchEvent(final Event event, final EventDispatchChain tail) {
-//				if (event instanceof MouseEvent) {
-//					MouseEvent mouseEvent = (MouseEvent) event;
-//					if (MouseButton.SECONDARY == mouseEvent.getButton()) {
-//						mouseEvent.consume();
-//					}
-//				}
-//				return originalDispatcher.dispatchEvent(event, tail);
-//			}
-//		});
+        // ----- 4.diable right click
+        // !!! if you want to use right-click on webview, please comment out followings. !!!
+        wview.setEventDispatcher(new EventDispatcher() {
+            private final EventDispatcher originalDispatcher = wview.getEventDispatcher();
+
+            @Override
+            public Event dispatchEvent(final Event event, final EventDispatchChain tail) {
+                if (event instanceof MouseEvent) {
+                    MouseEvent mouseEvent = (MouseEvent) event;
+                    if (MouseButton.SECONDARY == mouseEvent.getButton()) {
+                        mouseEvent.consume();
+                    }
+                }
+                return originalDispatcher.dispatchEvent(event, tail);
+            }
+        });
     }
 
     /**
-     * Javascript を呼び出します.
+     * call Javascript function.
      *
-     * @param function function名
-     * @param args 引数
-     * @return 返値
+     * @param function javascript function
+     * @param args args
+     * @return return value from javascript function.
      */
     public Object callJs(final String function, final Object... args) {
         if (WebState.ACCESSIBLE != state) {
-            throw new IllegalStateException("Webviewの初期化が終了していません");
+            throw new IllegalStateException("Webview is not initialized.");
         }
         WebEngine engine = pWview.getEngine();
         JSObject win = (JSObject) engine.executeScript("window");
@@ -169,18 +190,18 @@ public abstract class WebViewController {
     }
 
     /**
-     * JS-Java通信用の設定.
+     * bind this object to jBridge on javascript.
      *
      * @param engine WebEngine
-     * @param callback Callbackオブジェクト(このWebViewController)
-     * @param cnt 再試行回数
+     * @param callback bind object (this object)
+     * @param cnt retry count
      */
     private void setCallBack(final WebEngine engine, final Object callback, final int cnt) {
         final Logger logger = LoggerFactory.getLogger(getClass());
         if (cnt > RETRY_LIMIT) {
+            logger.error("failed to initialize webview");
             state = WebState.EXIT_FAIL;
-            logger.error("Web View の初期化に失敗しました");
-            handleLoadError(new Exception("Web View の初期化に失敗しました"));
+            handleLoadError(new Exception("failed to initialize webview"));
             return;
         }
 
@@ -193,53 +214,49 @@ public abstract class WebViewController {
                     JSObject win = (JSObject) engine.executeScript("window");
                     win.setMember("jBridge", callback);
 
-                    // Javascript エンジンが起動して、正常に通信できることを確認する
+                    // Is jBridge not empty?
                     if ((Boolean) engine.executeScript("isJBridgeReady()")) {
                         logger.trace("Set Callback Object Success");
                         state = WebState.ACCESSIBLE;
                         onWebViewReady();
                         return;
                     }
-
+                    
+                    // may be javascript engin wake up but jBridge is not bound.
                     logger.trace("Set Callback Object Fail. Retry later");
-                    setCallBack(engine, callback, cnt + 1); // <-- ここでの this は、WebViewController ではなく Runnabale
+                    setCallBack(engine, callback, cnt + 1);
 
                 } catch (JSException ex) {
-					// WebView は非同期で動いているので、Javascript エンジンが起動する前に
-                    // isJBridgeReady() を呼ぶとエラーになる可能性がある。
-                    // 何回か試せば成功する。
-                    logger.trace("WebView 上の Javascript に Java への Callback を設定できませんでした。リトライします", ex);
-                    setCallBack(engine, callback, cnt + 1); // <-- ここでの this は、WebViewController ではなく Runnabale
+                    // may be javascript engin not wake up.
+                    logger.trace("Set Callback Object Fail. Retry later");
+                    setCallBack(engine, callback, cnt + 1);
                 }
             }
         });
     }
 
     /**
-     * コンテンツを読み込みます(完了を待たずに復帰します).
+     * load contents asynchronusly.
      *
-     * @param template テンプレート
-     * @param params パラメータ
+     * @param template template file
+     * @param params params
      */
     public void loadContentAsync(final String template, final Object[]... params) {
-        javafx.application.Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Map<Object, Object> map = new HashMap<>();
-                for (Object[] param : params) {
-                    map.put(param[0], param[1]);
-                }
-                WebEngine webEngine = pWview.getEngine();
-                webEngine.loadContent(MyVelocityUtil.merge(template, map));
+        javafx.application.Platform.runLater(() -> {
+            Map<Object, Object> map = new HashMap<>();
+            for (Object[] param : params) {
+                map.put(param[0], param[1]);
             }
+            WebEngine webEngine = pWview.getEngine();
+            webEngine.loadContent(MyVelocityUtil.merge(template, map));
         });
     }
 
     /**
-     * コンテンツを読み込みます(完了を待って復帰します).
+     * load contents synchronusly.
      *
-     * @param template テンプレート
-     * @param params パラメータ
+     * @param template template file
+     * @param params params
      */
     public void loadContentSync(final String template, final Object[]... params) {
         loadContentAsync(template, params);
@@ -253,21 +270,21 @@ public abstract class WebViewController {
     }
 
     /**
-     * WebView 側から alert() が呼ばれたときに呼ばれます.
+     * handle javascript:alert().
      *
-     * @param event イベント情報
+     * @param event Event
      */
     public abstract void handleAlert(WebEvent<String> event);
 
     /**
-     * 画面ロード時にエラーが起きた時に呼ばれます.
+     * handler errors fromm javascript engine.
      *
-     * @param th エラー
+     * @param th error
      */
     public abstract void handleLoadError(Throwable th);
 
     /**
-     * WebViewで描画終了時に呼ばれます.
+     * handler web view trun to ready.
      */
     public abstract void onWebViewReady();
 

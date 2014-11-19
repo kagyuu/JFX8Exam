@@ -11,17 +11,17 @@ import javafx.scene.image.Image;
  */
 public interface DialogController extends Initializable {
   /**
-   * @return FXML ファイル名
+   * @return FXML file name
    */
   String fxml();
 
   /**
-   * @return Window タイトル
+   * @return Window title
    */
   String title();
 
   /**
-   * @return アイコン
+   * @return Icon image
    */
   Image getIcon();
 }
