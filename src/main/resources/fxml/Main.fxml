@@ -12,10 +12,10 @@
     <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
             <Label fx:id="txtSum" text="Value = 0" />
-        <Hyperlink onAction="#handleAddAction" text="足し算業務" />
-        <Hyperlink onAction="#handleSubAction" text="引き算業務" />
-            <Hyperlink onAction="#handle3DAction" text="3Dの練習" />
-            <Hyperlink onAction="#handleWebViewAction" text="WebViewの練習" />
+        <Hyperlink onAction="#handleAddAction" text="Add-BizLogic-Entity" />
+        <Hyperlink onAction="#handleSubAction" text="Sub-BizLogic-Entity" />
+            <Hyperlink onAction="#handle3DAction" text="Java FX 3D Example" />
+            <Hyperlink onAction="#handleWebViewAction" text="WebView Example" />
       </children>
     </VBox>
   </children>

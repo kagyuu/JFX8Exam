@@ -58,6 +58,7 @@
 
 <h1>YOUR COMPONENTS:</h1>
 
+<!-- ********** Java FX 8 Example ********** -->
 <h2 class="demoHeaders">Java FX 8</h2>
 
 <p>
@@ -78,6 +79,7 @@
   <button onClick="sendJson();">Send to Java</button>
 </form>
 </p>
+<!-- ********** Java FX 8 Example ********** -->
 
 <!-- Accordion -->
 <h2 class="demoHeaders">Accordion</h2>
@@ -415,6 +417,7 @@ the element with your mouse, the title attribute is displayed in a little box ne
 <script src="${root}/jquery/jquery-ui.js"></script>
 <script src="${root}/jquery/jquery.serializejson.js"></script>
 <script>
+// ********** Java FX 8 Example **********
 
 // Java-Javascript bridge object.
 // The jBridge will be bound to WebViewController that is Java Object.
@@ -427,24 +430,25 @@ $("#jfxSlider").progressbar({
     value: 0.0
 });
 
-// Javaから呼ばれて、プログレスバーの値を変える
+// will be called from JavaFX
 function updateSlider(val) {
   $("#jfxSlider").progressbar('value', val);
 }
 
-// Javaから呼ばれて、テキストボックスの値を変える
+// will be called from JavaFX
 function getJson(jsonString) {
   var obj = JSON.parse(jsonString);
   $('#txtMountain').val(obj.mountain);
   $('#txtAltitude').val(obj.altitude);
 }
 
-// Javaを呼び出す
+// call JavaFX
 function sendJson() {
   var jsonObj = $("#frmMountain").serializeJSON();
   var jsonString = JSON.stringify(jsonObj);
   jBridge.getJson(jsonString);
 }
+// ********** Java FX 8 Example **********
 
 $( "#accordion" ).accordion();
 
