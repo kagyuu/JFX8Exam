@@ -15,6 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -79,7 +80,12 @@ public class MainController extends AbstractDialogController implements Observer
      */
     @FXML
     public void handle3DAction(final ActionEvent event) {
-        final FXMLDialog d3Dialog = new FXMLDialog(d3ExamController, myStage);
+        // It's may be bug that the modeless child dialog stay upper layer of parent
+        // in spite of click parent dialg and focus it.
+        // So we must specify null as parent of modeless child dialog.
+        // But that orphan dialog will not close even when top level dialog is closed.
+        // Therefore we must close that orphan dialog manually, see onClose() method of this class.
+        final FXMLDialog d3Dialog = new FXMLDialog(d3ExamController, null, Modality.NONE);
         d3Dialog.show();
     }
 
@@ -117,6 +123,18 @@ public class MainController extends AbstractDialogController implements Observer
             txtSum.setText(String.format("Value=%d", entity.getVal()));
         } else if (obj instanceof SubController) {
             txtSum.setText(String.format("Value=%d", entity.getVal()));
+        }
+    }
+    
+    /**
+     * call when dialog will be closed.
+     * Close d3ExamDialog that is modeless.
+     */
+    @Override
+    public void onClose() {
+        Stage d3ExamDialog = d3ExamController.getMyStage();
+        if (null != d3ExamDialog) {
+            d3ExamDialog.close();
         }
     }
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,6 +14,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +96,10 @@ public class FXMLDialog extends Stage {
             getIcons().add(controller.getIcon());
 
             wireThis(controller);
+            
+            this.setOnCloseRequest((WindowEvent we) -> {
+                controller.onClose();
+            });
         } catch (IOException e) {
             LOGGER.error("Faild to create FXMLDialog", e);
             throw new RuntimeException(e);

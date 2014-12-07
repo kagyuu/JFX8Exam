@@ -24,5 +24,10 @@ public interface DialogController extends Initializable {
    * @return Icon image
    */
   Image getIcon();
+  
+  /**
+   * call when dialog will be closed.
+   */
+  void onClose();
 }
 

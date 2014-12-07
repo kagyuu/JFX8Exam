@@ -63,4 +63,12 @@ public abstract class AbstractDialogController
     public final Image getIcon() {
         return icon;
     }
+
+    /**
+     * call when dialog will be closed.
+     */
+    @Override
+    public void onClose() {
+        // do nothing
+    }
 }
