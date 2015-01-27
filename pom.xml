@@ -12,6 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>com.mycompany.jfxtemplate.MainApp</mainClass>
+        <bootClass>com.mycompany.jfxtemplate.Boot</bootClass>
     </properties>
 
     <organization>
@@ -34,7 +35,9 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>8.1.1</version>
                 <configuration>
-                    <mainClass>${mainClass}</mainClass>
+                    <mainClass>${bootClass}</mainClass>
+                    <vendor>Fujitsu.</vendor>
+                    <verbose>true</verbose>
                 </configuration>
             </plugin>
             <plugin>
@@ -53,6 +56,22 @@
                     <argLine>-javaagent:"${settings.localRepository}"/com/googlecode/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</argLine>
                 </configuration>
             </plugin>
+            <!-- For Debug run -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <!-- automatically creates the classpath using all project dependencies,
+                        also adding the project build directory -->
+                        <classpath/>
+                        <argument>${mainClass}</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -68,7 +87,7 @@
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
             <version>8.20.8</version>
-        </dependency>        
+        </dependency>
         <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
@@ -112,7 +131,7 @@
             <artifactId>janino</artifactId>
             <version>2.6.1</version>
         </dependency>
-        <!-- Lombok (getter/setter injection) -->    
+        <!-- Lombok (getter/setter injection) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -131,5 +150,21 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.2.3</version>
         </dependency>
+    <dependency>
+       <groupId>org.glassfish.hk2.external</groupId>
+       <artifactId>javax.inject</artifactId>
+       <version>2.2.0-b15</version>
+    </dependency>
+    <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>3.0</version>
+        <exclusions>
+            <exclusion>
+                <artifactId>javax.inject</artifactId>
+                <groupId>javax.inject</groupId>
+            </exclusion>
+        </exclusions>
+    </dependency>        
     </dependencies>
 </project>
